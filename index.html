@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Producer — Автоматизация & Видео</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080B12;
+  --bg-card: #0F1420;
+  --bg-card-2: #121828;
+  --bg-pill: #13192A;
+  --text-primary: #F0F0FF;
+  --text-secondary: #A0A0B0;
+  --text-accent: #6B7FD4;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.14);
+  --bar-start: #3D5AFE;
+  --bar-end: #7B61FF;
+  --radius: 12px;
+  --radius-sm: 6px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── BACKGROUND PATTERN ── */
+.bg-pattern {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8,11,18,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: #E8E8FF;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+/* ── PHOTO AVATAR ── */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-card-2);
+  border: 1px solid var(--border-hover);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.avatar-placeholder { display: flex; align-items: center; justify-content: center; width:100%; height:100%; }
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+  font-weight: 500;
+}
+.nav-links a:hover { color: var(--text-primary); }
+
+.nav-cta {
+  background: #fff;
+  color: #080B12;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.88; }
+
+/* ── MAIN WRAPPER ── */
+main {
+  position: relative;
+  z-index: 1;
+  padding-top: 64px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+/* ── SECTIONS ── */
+section { padding: 60px 0; }
+section + section { border-top: 1px solid var(--border); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: var(--text-accent);
+  opacity: 0.6;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 0 60px;
+  border-top: none !important;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-accent);
+  border: 1px solid rgba(107,127,212,0.3);
+  background: rgba(107,127,212,0.07);
+  border-radius: 20px;
+  padding: 5px 14px;
+  margin-bottom: 28px;
+  letter-spacing: 0.04em;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #6B7FD4;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+.hero-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  max-width: 760px;
+}
+.hero-title em {
+  font-style: normal;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.hero-sub {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: 36px;
+  font-weight: 400;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: #fff;
+  color: #080B12;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 26px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: opacity 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+.btn-ghost {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s, border-color 0.2s;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-ghost:hover { color: var(--text-primary); border-color: var(--border-hover); }
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  margin-top: 52px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.hero-stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.hero-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* ── BENTO GRID ── */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.25s, background 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover { border-color: var(--border-hover); background: var(--bg-card-2); }
+
+.col-2 { grid-column: span 2; }
+.col-3 { grid-column: span 3; }
+.row-2 { grid-row: span 2; }
+
+.card-label {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.card-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-weight: 400;
+}
+
+.card-num {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.card-num-sub {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── PROGRESS BAR ── */
+.bar-group { margin-top: 18px; }
+.bar-item { margin-bottom: 14px; }
+.bar-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  font-family: 'DM Mono', monospace;
+}
+.bar-meta span:last-child { color: var(--text-primary); font-weight: 500; }
+.bar-track {
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  height: 3px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--bar-start), var(--bar-end));
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── TAGS ── */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+.tag {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  background: rgba(107,127,212,0.1);
+  color: #8899E0;
+  border: 1px solid rgba(107,127,212,0.2);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+
+/* ── STACK PILLS ── */
+.stack-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.stack-pill {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  background: var(--bg-pill);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #C0C8E8;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s;
+}
+.stack-pill:hover { border-color: rgba(255,255,255,0.2); }
+
+/* ── SERVICES ── */
+.services-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.service-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: border-color 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.service-card:hover { border-color: var(--border-hover); }
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(107,127,212,0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.service-card:hover::before { opacity: 1; }
+
+.service-icon {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+  background: var(--bg-pill);
+}
+
+.service-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.service-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.service-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.service-list li {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-weight: 400;
+}
+.service-list li::before {
+  content: '→';
+  color: var(--text-accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── CASES ── */
+.cases-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.case-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: border-color 0.25s, background 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+.case-card:hover { border-color: var(--border-hover); background: var(--bg-card-2); }
+.case-card.featured {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.case-num {
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-accent);
+  margin-bottom: 12px;
+}
+.case-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+.case-body {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+  font-weight: 400;
+}
+
+.case-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  background: rgba(255,255,255,0.025);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 16px;
+}
+.case-metric-val {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+.case-metric-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.case-action-wrap {
+  margin-top: auto; /* Прижимает кнопку к низу карточки */
+  padding-top: 24px;
+}
+
+/* ── PROCESS ── */
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 4px;
+}
+.step-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  position: relative;
+}
+.step-num {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: rgba(107,127,212,0.18);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.step-body {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+/* ── GALLERY ── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+.gallery-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.gallery-item:hover { border-color: var(--border-hover); transform: scale(1.01); }
+.gallery-item.wide { grid-column: span 2; }
+
+.gallery-thumb {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gallery-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  background: linear-gradient(135deg, #0F1420, #121828);
+}
+.gallery-play-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: rgba(107,127,212,0.15);
+  border: 1px solid rgba(107,127,212,0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.gallery-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 14px;
+  background: linear-gradient(transparent, rgba(8,11,18,0.9));
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.gallery-overlay a {
+  color: var(--text-accent);
+  text-decoration: none;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── TESTIMONIALS ── */
+.testi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.testi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.testi-quote {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+.testi-quote::before { content: '"'; color: var(--text-accent); font-size: 20px; }
+.testi-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.testi-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg-pill);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--text-accent);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.testi-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.testi-role {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ── ABOUT ── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+.about-photo {
+  width: 100%;
+  aspect-ratio: 3/4;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+}
+.about-photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.about-photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.about-body { font-size: 14px; color: var(--text-secondary); line-height: 1.8; font-weight: 400; }
+.about-body p + p { margin-top: 16px; }
+.about-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 28px;
+}
+.about-fact {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.about-fact-val {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+.about-fact-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── CTA SECTION ── */
+.cta-block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.cta-text-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  max-width: 480px;
+}
+.cta-text-sub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+.cta-buttons {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+  color: var(--text-secondary);
+}
+.footer-copy {
+  font-size: 12px;
+  color: rgba(160,160,176,0.5);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-badge { animation: fade-up 0.5s ease both; }
+.hero-title { animation: fade-up 0.6s 0.1s ease both; }
+.hero-sub   { animation: fade-up 0.6s 0.2s ease both; }
+.hero-actions { animation: fade-up 0.6s 0.3s ease both; }
+.hero-stats { animation: fade-up 0.6s 0.4s ease both; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  main { padding-left: 20px; padding-right: 20px; }
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .bento { grid-template-columns: 1fr 1fr; }
+  .services-grid, .cases-grid, .testi-grid, .process-steps { grid-template-columns: 1fr; }
+  .case-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+  .about-grid { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .gallery-item.wide { grid-column: span 1; }
+  .cta-block { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<svg class="bg-pattern" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="glow1" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" stop-color="#1A2540" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#080B12" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(107,127,212,0.07)" stroke-width="0.5"/>
+    </pattern>
+    <pattern id="dots" width="60" height="60" patternUnits="userSpaceOnUse">
+      <circle cx="30" cy="30" r="1" fill="rgba(107,127,212,0.12)"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="800" fill="url(#glow1)"/>
+  <rect width="1200" height="800" fill="url(#grid)"/>
+  <rect width="1200" height="800" fill="url(#dots)"/>
+  <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(107,127,212,0.06)" stroke-width="1"/>
+  <line x1="800" y1="0" x2="800" y2="300" stroke="rgba(107,127,212,0.06)" stroke-width="1"/>
+  <circle cx="800" cy="200" r="2" fill="rgba(107,127,212,0.25)"/>
+  <circle cx="400" cy="200" r="2" fill="rgba(107,127,212,0.25)"/>
+  <path d="M 600 -100 Q 900 200 600 500" fill="none" stroke="rgba(107,127,212,0.04)" stroke-width="1"/>
+</svg>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="avatar">
+      <img src="ВСТАВЬ_ССЫЛКУ_НА_ФОТО" alt="Фото" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+      <div class="avatar-placeholder" style="display:none;">АИ</div>
+    </div>
+    AI.PRODUCER
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#cases">Кейсы</a></li>
+    <li><a href="#gallery">Портфолио</a></li>
+    <li><a href="#about">Обо мне</a></li>
+  </ul>
+  <a href="https://t.me/memento_patre" class="nav-cta" target="_blank">Написать →</a>
+</nav>
+
+<main>
+
+  <section class="hero">
+    <div class="hero-badge">Доступен для новых проектов</div>
+    <h1 class="hero-title">
+      Автоматизирую бизнес<br>
+      <em>и создаю AI-видео</em><br>
+      без команды и лишних расходов
+    </h1>
+    <p class="hero-sub">
+      Строю n8n-пайплайны и Claude-агентов для бизнеса в РФ, СНГ и Европы. Создаю ультрареалистичные AI-ролики и мультфильмы под ключ. Production-цикл — от 4 часов.
+    </p>
+    <div class="hero-actions">
+      <a href="https://t.me/memento_patre" class="btn-primary" target="_blank">Обсудить проект →</a>
+      <a href="#cases" class="btn-ghost">Смотреть кейсы ↓</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">47+</div>
+        <div class="hero-stat-label">автоматизаций запущено</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">340+</div>
+        <div class="hero-stat-label">AI-роликов сгенерировано</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">−78%</div>
+        <div class="hero-stat-label">стоимость production</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">3 года</div>
+        <div class="hero-stat-label">в автоматизации</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="reveal">
+    <div class="section-label">Что я делаю</div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">⚙</div>
+        <div class="service-title">Автоматизация бизнеса</div>
+        <p class="service-body">Проектирую и запускаю рабочие процессы на n8n и Claude API. Связываю CRM, мессенджеры, документы и внутренние системы в единый поток без программистов.</p>
+        <ul class="service-list">
+          <li>n8n-пайплайны с Claude-агентами</li>
+          <li>Автоответы и квалификация лидов в Telegram / WhatsApp</li>
+          <li>Обработка заявок, выставление счетов, уведомления</li>
+          <li>Парсинг, агрегация данных, авто-отчёты</li>
+          <li>Интеграция с 1С, Bitrix24, AmoCRM, Google Sheets</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">n8n</span>
+          <span class="tag">Claude API</span>
+          <span class="tag">Make.com</span>
+          <span class="tag">Telegram Bot API</span>
+        </div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎬</div>
+        <div class="service-title">AI-видео и изображения</div>
+        <p class="service-body">Генерирую ультрареалистичные ролики, мультфильмы и рекламные короткометражки с нуля. Полный цикл: сценарий → раскадровка → генерация → монтаж → озвучка.</p>
+        <ul class="service-list">
+          <li>Рекламные ролики до 60 секунд</li>
+          <li>Мультяшные и анимационные серии</li>
+          <li>Ультрареалистичные видео и фото для соцсетей</li>
+          <li>AI-ведущие и дикторы (клонирование голоса)</li>
+          <li>Автоматизированный конвейер для YouTube-каналов</li>
+        </ul>
+        <div class="tag-row">
+          <span class="tag">Kling AI</span>
+          <span class="tag">Veo 2</span>
+          <span class="tag">Runway Gen-3</span>
+          <span class="tag">ElevenLabs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="section-label">Цифры</div>
+    <div class="bento">
+      <div class="card col-2">
+        <div class="card-label">Кейс — YouTube на автопилоте</div>
+        <div class="card-title">Канал 0 → 12 000 подписчиков за 4 месяца</div>
+        <div class="card-body">Построил полностью автоматический конвейер: тренды → сценарий (Claude) → Kling-видео → автомонтаж → публикация по расписанию. Участие человека — 0 минут в день.</div>
+        <div class="bar-group">
+          <div class="bar-item">
+            <div class="bar-meta"><span>Скорость выпуска</span><span>×12</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:92%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-meta"><span>Снижение стоимости ролика</span><span>−78%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:78%"></div></div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-meta"><span>Рост просмотров (90 дней)</span><span>+340%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+          </div>
+        </div>
+        <div class="tag-row"><span class="tag">n8n</span><span class="tag">Kling AI</span><span class="tag">Claude</span><span class="tag">YouTube API</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Активных пайплайнов</div>
+        <div class="card-num">47</div>
+        <div class="card-num-sub">в production прямо сейчас</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Время production</div>
+        <div class="card-num">4ч</div>
+        <div class="card-num-sub">вместо 5 рабочих дней</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Экономия бюджета</div>
+        <div class="card-num">−78%</div>
+        <div class="card-num-sub">по сравнению с ручным монтажом</div>
+      </div>
+
+      <div class="card col-3">
+        <div class="card-label">Технологический стек</div>
+        <div class="stack-grid">
+          <span class="stack-pill">n8n</span>
+          <span class="stack-pill">Claude API</span>
+          <span class="stack-pill">Kling AI</span>
+          <span class="stack-pill">Veo 2</span>
+          <span class="stack-pill">Runway Gen-3</span>
+          <span class="stack-pill">ElevenLabs</span>
+          <span class="stack-pill">Make.com</span>
+          <span class="stack-pill">Airtable</span>
+          <span class="stack-pill">Telegram Bot API</span>
+          <span class="stack-pill">OpenAI API</span>
+          <span class="stack-pill">Midjourney</span>
+          <span class="stack-pill">Stable Diffusion</span>
+          <span class="stack-pill">Bitrix24</span>
+          <span class="stack-pill">Google Sheets API</span>
+          <span class="stack-pill">Webhook.site</span>
+          <span class="stack-pill">Supabase</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cases" class="reveal">
+    <div class="section-label">Кейсы</div>
+    <div class="cases-grid">
+
+      <div class="case-card featured">
+        <div style="display: flex; flex-direction: column; height: 100%;">
+          <div class="case-num">КЕЙС 01 · АВТОМАТИЗАЦИЯ</div>
+          <div class="case-title">Лид-бот для застройщика: конверсия заявок +63%</div>
+          <p class="case-body">Застройщик терял лиды из-за долгого ответа менеджеров. Построил Claude-агента в Telegram, который квалифицирует лидов по 7 критериям, отвечает на вопросы по проектам и бронирует звонок с менеджером. Работает 24/7 без оператора.</p>
+          <div class="tag-row"><span class="tag">Claude API</span><span class="tag">n8n</span><span class="tag">Telegram Bot</span><span class="tag">AmoCRM</span></div>
+          <div class="case-action-wrap">
+            <a href="#" class="btn-ghost">Заглянуть под капот →</a>
+          </div>
+        </div>
+        <div>
+          <div class="case-metrics">
+            <div>
+              <div class="case-metric-val">+63%</div>
+              <div class="case-metric-label">конверсия в звонок</div>
+            </div>
+            <div>
+              <div class="case-metric-val">90 сек</div>
+              <div class="case-metric-label">среднее время ответа</div>
+            </div>
+            <div>
+              <div class="case-metric-val">0</div>
+              <div class="case-metric-label">операторов онлайн 24/7</div>
+            </div>
+          </div>
+          <div class="bar-group" style="margin-top:20px">
+            <div class="bar-item">
+              <div class="bar-meta"><span>Скорость первого ответа</span><span>×40 быстрее</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:96%"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-meta"><span>Доля квалифицированных лидов</span><span>71%</span></div>
+              <div class="bar-track"><div class="bar-fill" style="width:71%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-num">КЕЙС 02 · АВТОМАТИЗАЦИЯ</div>
+        <div class="case-title">Авто-отчёты для e-commerce: 3 часа → 8 минут</div>
+        <p class="case-body">Маркетолог тратил 3 часа ежедневно на сбор данных из Wildberries, OZON и рекламных кабинетов. Пайплайн на n8n собирает всё автоматически, формирует PDF-отчёт и отправляет в Telegram к 9:00.</p>
+        <div class="case-metrics" style="grid-template-columns:1fr 1fr">
+          <div><div class="case-metric-val">8 мин</div><div class="case-metric-label">вместо 3 часов</div></div>
+          <div><div class="case-metric-val">−95%</div><div class="case-metric-label">ручного труда</div></div>
+        </div>
+        <div class="tag-row"><span class="tag">n8n</span><span class="tag">WB API</span><span class="tag">OZON API</span></div>
+        <div class="case-action-wrap">
+          <a href="#" class="btn-ghost">Заглянуть под капот →</a>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-num">КЕЙС 03 · AI-ВИДЕО</div>
+        <div class="case-title">Рекламный ролик для бренда косметики</div>
+        <p class="case-body">Ультрареалистичный 30-секундный рекламный ролик без съёмочной группы. Сценарий, раскадровка, генерация кадров в Kling AI, монтаж и озвучка через ElevenLabs. Сдан за 2 дня.</p>
+        <div class="case-metrics" style="grid-template-columns:1fr 1fr">
+          <div><div class="case-metric-val">2 дня</div><div class="case-metric-label">вместо 3 недель</div></div>
+          <div><div class="case-metric-val">−85%</div><div class="case-metric-label">бюджет vs агентство</div></div>
+        </div>
+        <div class="tag-row"><span class="tag">Kling AI</span><span class="tag">ElevenLabs</span><span class="tag">Runway</span></div>
+        <div class="case-action-wrap">
+          <a href="#" class="btn-ghost">Заглянуть под капот →</a>
+        </div>
+      </div>
+
+      <div class="case-card">
+        <div class="case-num">КЕЙС 04 · AI-ВИДЕО</div>
+        <div class="case-title">Мультсериал: 12 эпизодов за 30 дней</div>
+        <p class="case-body">Детский мультсериал в едином визуальном стиле. Конвейер: сценарий → LoRA-модель персонажей → Kling → автомонтаж → озвучка. 12 серий по 3 минуты за месяц силами одного человека.</p>
+        <div class="case-metrics" style="grid-template-columns:1fr 1fr">
+          <div><div class="case-metric-val">12</div><div class="case-metric-label">эпизодов за месяц</div></div>
+          <div><div class="case-metric-val">1</div><div class="case-metric-label">человек в команде</div></div>
+        </div>
+        <div class="tag-row"><span class="tag">Kling AI</span><span class="tag">LoRA</span><span class="tag">n8n</span></div>
+        <div class="case-action-wrap">
+          <a href="#" class="btn-ghost">Заглянуть под капот →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="section-label">Как я работаю</div>
+    <div class="process-steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Разбор процесса</div>
+        <div class="step-body">30-минутный созвон. Выясняю, что занимает время и деньги. Нахожу точку максимального ROI.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Схема решения</div>
+        <div class="step-body">Рисую архитектуру пайплайна или раскадровку. Согласовываем до старта — никаких сюрпризов.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Сборка и тест</div>
+        <div class="step-body">Строю, тестирую на реальных данных. Показываю в действии до сдачи. Итерируем быстро.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-title">Сдача и поддержка</div>
+        <div class="step-body">Передаю доступы, документирую. Месяц поддержки включён в стоимость любого проекта.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="reveal">
+    <div class="section-label">Портфолио — AI-видео и изображения</div>
+    <div class="gallery-grid">
+
+      <div class="gallery-item wide">
+        <div class="gallery-placeholder">
+          <div class="gallery-play-icon">▶</div>
+          <span>Рекламный ролик · косметика</span>
+        </div>
+        <div class="gallery-overlay">
+          <a href="https://youtube.com/ВСТАВЬ_ССЫЛКУ" target="_blank">Смотреть на YouTube →</a>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <div class="gallery-play-icon">▶</div>
+          <span>Мультсериал · эп. 1</span>
+        </div>
+        <div class="gallery-overlay">
+          <a href="https://youtube.com/ВСТАВЬ_ССЫЛКУ" target="_blank">YouTube →</a>
+        </div>
+      </div>
+
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <span style="font-size:24px;opacity:0.3">◻</span>
+          <span>Ультрареалистичное фото</span>
+        </div>
+        <div class="gallery-overlay">Вставь изображение</div>
+      </div>
+
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+          <span style="font-size:24px;opacity:0.3">◻</span>
+          <span>AI-портрет / реклама</span>
+        </div>
+        <div class="gallery-overlay">Вставь изображение</div>
+      </div>
+
+      <div class="gallery-item wide">
+        <div class="gallery-placeholder">
+          <div class="gallery-play-icon">▶</div>
+          <span>YouTube-автопилот · демо конвейера</span>
+        </div>
+        <div class="gallery-overlay">
+          <a href="https://youtube.com/ВСТАВЬ_ССЫЛКУ" target="_blank">Смотреть демо →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="section-label">Отзывы клиентов</div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <p class="testi-quote">Айдар и AIVA Company построили нам бота-квалификатора за 4 дня. Менеджеры теперь получают только горячих лидов — конверсия в сделку выросла ощутимо. Рекомендую без оговорок.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">АК</div>
+          <div>
+            <div class="testi-name">Алексей К.</div>
+            <div class="testi-role">Директор по маркетингу, застройщик</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">Заказывала рекламный ролик для Instagram. Результат — лучше, чем от студии за втрое большие деньги. Спасибо Айдару и команде AIVA Company! Главное — скорость: от брифа до финального файла 2 дня.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">МВ</div>
+          <div>
+            <div class="testi-name">Мария В.</div>
+            <div class="testi-role">Основатель, бренд косметики</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">Вместе с AIVA Company автоматизировали сбор аналитики и рассылку отчётов. Экономим 15 часов в неделю. n8n-схема отлично документирована Айдаром — поддерживаем сами без проблем.</p>
+        <div class="testi-author">
+          <div class="testi-avatar">ДП</div>
+          <div>
+            <div class="testi-name">Денис П.</div>
+            <div class="testi-role">Head of Growth, e-commerce</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="reveal">
+    <div class="section-label">Обо мне</div>
+    <div class="about-grid">
+      <div class="about-photo">
+        <img src="ВСТАВЬ_ССЫЛКУ_НА_ФОТО" alt="Фото Айдара" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="about-photo-placeholder" style="display:none;">
+          <span style="font-size:32px;opacity:0.15">◻</span>
+          <span style="font-size:11px;color:var(--text-secondary);font-family:'DM Mono',monospace">Вставь своё фото</span>
+        </div>
+      </div>
+      <div>
+        <p class="about-body">
+          Работаю на стыке автоматизации и AI-генерации с 2021 года. Начинал с простых Telegram-ботов, сейчас строю полноценные AI-агентные системы, которые принимают решения и управляют процессами без участия человека.
+        </p>
+        <p class="about-body">
+          Параллельно развиваю направление AI-видеопродакшна: от коротких рекламных роликов до мультипликационных сериалов. Верю, что маленькая команда с правильными инструментами делает то, что раньше требовало 20 человек и миллионного бюджета.
+        </p>
+        <p class="about-body">
+          Специализируюсь на задачах бизнеса в России, СНГ и Европе — знаю специфику интеграций с 1С, Битрикс, Wildberries, а также международными сервисами и платёжными системами.
+        </p>
+        <div class="about-facts">
+          <div class="about-fact">
+            <div class="about-fact-val">3+ года</div>
+            <div class="about-fact-label">в автоматизации</div>
+          </div>
+          <div class="about-fact">
+            <div class="about-fact-val">47+ проектов</div>
+            <div class="about-fact-label">сдано в production</div>
+          </div>
+          <div class="about-fact">
+            <div class="about-fact-val">340+ роликов</div>
+            <div class="about-fact-label">сгенерировано</div>
+          </div>
+          <div class="about-fact">
+            <div class="about-fact-val">1 день</div>
+            <div class="about-fact-label">старт после брифа</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal" style="padding-bottom: 80px; border-top: none !important;">
+    <div class="cta-block">
+      <div>
+        <div class="cta-text-title">Готовы автоматизировать<br>свой бизнес или запустить AI-видео?</div>
+        <div class="cta-text-sub">Разберу вашу задачу за 30 минут. Бесплатно.</div>
+      </div>
+      <div class="cta-buttons">
+        <a href="https://t.me/memento_patre" class="btn-primary" target="_blank">Написать в Telegram →</a>
+        <a href="mailto:ВСТАВЬ@EMAIL.COM" class="btn-ghost">или по email</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-logo">AIVA COMPANY</div>
+  <div class="footer-copy">2024 — Автоматизация & AI-видеопродакшн</div>
+</footer>
+
+<script>
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+      observer.unobserve(el.target);
+    }
+  });
+}, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// Animate progress bars on scroll
+const barFills = document.querySelectorAll('.bar-fill');
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const targetW = el.style.width;
+      el.style.width = '0%';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => { el.style.width = targetW; });
+      });
+      barObserver.unobserve(el);
+    }
+  });
+}, { threshold: 0.5 });
+barFills.forEach(b => barObserver.observe(b));
+</script>
+</body>
+</html>
