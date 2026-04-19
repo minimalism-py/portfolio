@@ -159,20 +159,71 @@ section + section { border-top: 1px solid var(--border); }
   border-top: none !important;
 }
 
-/* НОВЫЙ БЛОК ДЛЯ БАННЕРА */
-.hero-banner-wrapper {
-  width: 100%;
-  margin-bottom: 40px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  box-shadow: 0 0 60px rgba(107, 127, 212, 0.12); /* Неоновое свечение */
-  background: var(--bg-card);
+/* ── НОВЫЙ БЛОК ДЛЯ ПОЛНОЭКРАННОГО БАННЕРА ── */
+.hero-banner-full {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-top: -60px; /* компенсируем верхний padding секции */
+  margin-bottom: 50px;
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
-.hero-banner-wrapper img {
+.hero-banner-full img {
   width: 100%;
-  display: block;
+  height: 450px;
   object-fit: cover;
+  object-position: center;
+  display: block;
+}
+/* Градиент для плавного растворения картинки в фоне сайта */
+.hero-banner-full::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 150px;
+  background: linear-gradient(to bottom, rgba(8,11,18,0), var(--bg));
+  pointer-events: none;
+}
+
+/* ── РАСКЛАДКА: ТЕКСТ СЛЕВА, КНОПКА СПРАВА ── */
+.hero-content-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+.hero-text-col {
+  flex: 1;
+  max-width: 760px;
+}
+.hero-action-col {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── ОРАНЖЕВАЯ КНОПКА (КАК У КОНКУРЕНТОВ) ── */
+.btn-orange {
+  background: #FF6B00;
+  color: #fff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 16px 36px;
+  border-radius: 40px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  display: inline-block;
+  white-space: nowrap;
+}
+.btn-orange:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(255, 107, 0, 0.4);
+  background: #FF7A1A;
+  color: #fff;
 }
 
 .hero-badge {
@@ -207,7 +258,6 @@ section + section { border-top: 1px solid var(--border); }
   letter-spacing: -0.03em;
   line-height: 1.1;
   margin-bottom: 20px;
-  max-width: 760px;
 }
 .hero-title em {
   font-style: normal;
@@ -813,12 +863,13 @@ footer {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-/* Анимации появляются по очереди (каскадом) */
-.hero-banner-wrapper { animation: fade-up 0.5s ease both; }
+/* Обновленные тайминги */
+.hero-banner-full { animation: fade-up 0.5s ease both; }
 .hero-badge { animation: fade-up 0.5s 0.1s ease both; }
 .hero-title { animation: fade-up 0.6s 0.2s ease both; }
 .hero-sub   { animation: fade-up 0.6s 0.3s ease both; }
 .hero-actions { animation: fade-up 0.6s 0.4s ease both; }
+.hero-action-col { animation: fade-up 0.6s 0.4s ease both; }
 .hero-stats { animation: fade-up 0.6s 0.5s ease both; }
 
 /* ── SCROLL REVEAL ── */
@@ -837,6 +888,20 @@ footer {
   main { padding-left: 20px; padding-right: 20px; }
   nav { padding: 0 20px; }
   .nav-links { display: none; }
+  
+  .hero-content-layout {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .hero-action-col {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+  .hero-banner-full img {
+    height: 250px;
+  }
+
   .bento { grid-template-columns: 1fr 1fr; }
   .services-grid, .cases-grid, .testi-grid, .process-steps { grid-template-columns: 1fr; }
   .case-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
@@ -893,23 +958,34 @@ footer {
 
   <section class="hero">
     
-    <div class="hero-banner-wrapper">
+    <div class="hero-banner-full">
       <img src="images/images/hero-banner.png" alt="AI Producer Hero" onerror="this.style.display='none'">
     </div>
 
-    <div class="hero-badge">Доступен для новых проектов</div>
-    <h1 class="hero-title">
-      Автоматизирую бизнес<br>
-      <em>и создаю AI-видео</em><br>
-      без команды и лишних расходов
-    </h1>
-    <p class="hero-sub">
-      Строю n8n-пайплайны и Claude-агентов для бизнеса в РФ, СНГ и Европы. Создаю ультрареалистичные AI-ролики и мультфильмы под ключ. Production-цикл — от 4 часов.
-    </p>
-    <div class="hero-actions">
-      <a href="https://t.me/memento_patre" class="btn-primary" target="_blank">Обсудить проект →</a>
-      <a href="#cases" class="btn-ghost">Смотреть кейсы ↓</a>
+    <div class="hero-content-layout">
+      
+      <div class="hero-text-col">
+        <div class="hero-badge">Доступен для новых проектов</div>
+        <h1 class="hero-title">
+          Автоматизирую бизнес<br>
+          <em>и создаю AI-видео</em><br>
+          без команды и лишних расходов
+        </h1>
+        <p class="hero-sub">
+          Строю n8n-пайплайны и Claude-агентов для бизнеса в РФ, СНГ и Европы. Создаю ультрареалистичные AI-ролики и мультфильмы под ключ. Production-цикл — от 4 часов.
+        </p>
+        <div class="hero-actions">
+          <a href="https://t.me/memento_patre" class="btn-primary" target="_blank">Обсудить проект →</a>
+          <a href="#cases" class="btn-ghost">Смотреть кейсы ↓</a>
+        </div>
+      </div>
+
+      <div class="hero-action-col">
+        <a href="https://t.me/memento_patre" class="btn-orange" target="_blank">Получить консультацию</a>
+      </div>
+
     </div>
+
     <div class="hero-stats">
       <div>
         <div class="hero-stat-num">47+</div>
